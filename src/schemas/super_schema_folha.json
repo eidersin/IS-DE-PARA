@@ -1,0 +1,159 @@
+{
+  "identificacao_documento": {
+    "sindicato_empregados": {
+      "nome": "string",
+      "cnpj": "string",
+      "representante": "string"
+    },
+    "sindicato_patronal": {
+      "nome": "string",
+      "cnpj": "string",
+      "representante": "string"
+    },
+    "vigencia": "string",
+    "data_base_categoria": "string",
+    "abrangencia_territorial": ["string"]
+  },
+  "pisos_salariais": [
+    {
+      "cargo_funcao": "string",
+      "valor_piso": "float",
+      "observacoes": "string"
+    }
+  ],
+  "reajuste_salarial": {
+    "percentual_reajuste": "string",
+    "data_aplicacao": "string",
+    "regras_proporcionalidade_admitidos": "string",
+    "compensacoes_permitidas": "string"
+  },
+  "beneficios": {
+    "vale_alimentacao": {
+      "obrigatorio_cct": "boolean",
+      "valor_mensal_ou_diario": "string",
+      "condicoes_concessao": "string (ex: sem faltas injustificadas)",
+      "natureza_salarial": "boolean",
+      "desconto_trabalhador_permitido": "string"
+    },
+    "vale_refeicao": {
+      "obrigatorio_cct": "boolean",
+      "valor_diario": "string",
+      "condicoes": "string"
+    },
+    "auxilio_creche": {
+      "obrigatorio_cct": "boolean",
+      "valor_reembolso": "string",
+      "idade_limite_filho": "string",
+      "condicoes_para_concessao": "string"
+    },
+    "seguro_de_vida_em_grupo": {
+      "obrigatorio_cct": "boolean",
+      "cobertura_morte": "string",
+      "cobertura_invalidez_acidente": "string",
+      "onus_para_trabalhador": "boolean"
+    },
+    "assistencia_odontologica": {
+      "obrigatorio_cct": "boolean",
+      "modelo": "string (ex: programa mantido pelo sindicato)",
+      "contribuicao_empresa": "string",
+      "contribuicao_empregado": "string",
+      "detalhes": "string"
+    },
+    "auxilio_funeral": {
+      "obrigatorio_cct": "boolean",
+      "valor_ou_condicoes": "string"
+    }
+  },
+  "adicionais_e_gratificacoes": {
+    "horas_extras": {
+      "percentual_dias_uteis": "string",
+      "percentual_domingos_feriados": "string",
+      "divisor_aplicavel": "string"
+    },
+    "adicional_noturno": {
+      "percentual": "string",
+      "horario_considerado_noturno": "string",
+      "duracao_hora_noturna_minutos": "string"
+    },
+    "adicional_insalubridade": {
+      "grau_maximo": {
+        "percentual": "string",
+        "base_calculo": "string (ex: salário mínimo)",
+        "atividades_aplicaveis": "string (ex: limpeza de banheiros de grande circulação)"
+      },
+      "outros_graus": "string"
+    },
+    "adicional_periculosidade": {
+      "percentual": "string",
+      "base_calculo": "string (ex: salário base)",
+      "possibilidade_cumulacao_insalubridade": "boolean"
+    },
+    "adicional_acumulo_funcao": {
+      "percentual": "string",
+      "base_calculo": "string (salário contratual)",
+      "condicoes_aplicacao": "string"
+    },
+    "quebra_de_caixa": {
+      "percentual": "string",
+      "cargos_aplicaveis": ["string"]
+    }
+  },
+  "jornada_de_trabalho": {
+    "jornada_12x36": {
+      "permitida_cct": "boolean",
+      "remuneracao_feriados": "string (ex: já compensado ou pago a 100%)",
+      "intervalo_intrajornada": "string (ex: 1 hora, com possibilidade de indenização)",
+      "dispensa_licenca_previa_insalubridade": "boolean"
+    },
+    "banco_de_horas": {
+      "permitido_cct": "boolean",
+      "prazo_compensacao_meses": "string",
+      "forma_pagamento_saldo_nao_compensado": "string"
+    },
+    "dia_da_categoria": {
+      "data_comemorativa": "string (ex: Segunda-feira de Carnaval)",
+      "regra_trabalho_nesse_dia": "string (ex: remuneração em dobro)"
+    }
+  },
+  "estabilidade_provisoria": {
+    "gestante": {
+      "periodo_convencional_complementar": "string (ex: 30 dias após o período legal)"
+    },
+    "pre_aposentadoria": {
+      "tempo_faltante_para_aposentadoria": "string (ex: 12 meses)",
+      "condicoes_e_requisitos": "string"
+    },
+    "retorno_afastamento_previdenciario": {
+      "periodo_estabilidade": "string"
+    },
+    "cipeiro": {
+      "estabilidade_suplente": "boolean"
+    }
+  },
+  "rescisao_contratual": {
+    "assistencia_sindical_obrigatoria": "string (ex: para contratos com mais de 1 ano)",
+    "documentos_exigidos_homologacao": ["string"],
+    "prazo_entrega_documentos": "string (ex: 20 dias para cidades fora da sede)",
+    "multa_atraso_pagamento_salario": "string"
+  },
+  "saude_e_seguranca": {
+    "fornecimento_uniformes_epi": {
+      "gratuidade": "boolean",
+      "regras_devolucao": "string"
+    },
+    "atestados_medicos": {
+      "aceitacao_atestados_sindicato": "boolean",
+      "prazo_entrega_empresa": "string (ex: 48 horas)"
+    },
+    "comunicacao_acidente_trabalho_cat": {
+      "obrigatoriedade_envio_sindicato": "boolean",
+      "prazo_envio": "string"
+    }
+  },
+  "contribuicoes_sindicais_empregados": {
+    "contribuicao_assistencial": "string",
+    "mensalidade_associativa": "string",
+    "outras_contribuicoes": "string"
+  },
+  "observacoes_finais": "string (ex: cláusulas específicas ou acordos complementares)"
+}

@@ -1,0 +1,82 @@
+{
+  "informacoes_gerais": {
+    "nome_cliente": "string",
+    "responsavel_aprovacao_diagnostico": "string",
+    "sistema_contabil_utilizado": "string"
+  },
+  "especificacoes_layout_arquivo": {
+    "formato_arquivo": "string (ex: txt, csv, xml)",
+    "observacoes_formato": "string (ex: Nuvem NÃO disponibiliza em xls)",
+    "campos_do_layout": [
+      {
+        "nome_campo": "string (ex: Campo 1, Conta Débito)",
+        "formato": "string (ex: Valor fixo, dd/mm/aaaa, 00.0.00.000)",
+        "regra_especifica": "string (ex: Retornar Centro de custo apenas para contas que iniciam com 1 ou 4)"
+      }
+    ]
+  },
+  "conceitos_gerais_contabilizacao": {
+    "integracao_empresa": {
+      "codigos_empresa_iguais_integracao": "boolean",
+      "regra_codigos_diferentes": "string",
+      "lista_empresas": [
+        {
+          "codigo_contabil": "string",
+          "razao_social": "string",
+          "cnpj": "string"
+        }
+      ]
+    },
+    "agrupamento": {
+      "tipo_agrupamento_utilizado": "string (ex: centro de custo, ADM, Produção)",
+      "regra_agrupamento": "string",
+      "codigo_agrupamento_igual_integracao": "boolean",
+      "regra_codigo_diferente": "string"
+    },
+    "plano_de_contas": {
+      "plano_unico_para_grupo": "boolean",
+      "regra_excecoes_plano": "string"
+    },
+    "lancamento_contabil": {
+      "tipo_partida": "string (Dobrada ou Simples)",
+      "tipo_codificacao_conta": "string (Classificação do Plano de Contas, Código Reduzido, Outros)",
+      "regra_codificacao": "string"
+    },
+    "outros_conceitos_regras": "string"
+  },
+  "configuracao_conta_contabil": {
+    "estrutura_conta": {
+      "tamanho_codigo": "integer",
+      "mascara": "string (ex: # - números, a - letras, & - alfanumérico)",
+      "tamanho_descricao_conta": "integer"
+    },
+    "parametros_lancamento": {
+      "conceitos_base_lancamento": ["string (ex: Cargo Comissionado, Centro de Custo, Estabelecimento)"],
+      "tipo_lancamento": "string (Múltiplo ou Único)",
+      "regra_tipo_lancamento": "string",
+      "tipo_conta_obrigatorio": "string (Alguma, Ambas, Crédito, Débito)"
+    },
+    "complementos_e_historicos": {
+      "utiliza_complemento_contas": "boolean",
+      "regra_complemento_contas": "string (ex: Prefixo, Sufixo para identificar Conceito)",
+      "historico_contabil_unico_para_lancamento": "boolean",
+      "utiliza_historico_por_conta": "boolean (um para crédito, um para débito)",
+      "utiliza_chave_lancamento_sap": "boolean",
+      "regra_chave_lancamento": "string"
+    },
+    "outras_regras_configuracao_conta": "string"
+  },
+  "configuracao_rateio_contabil": {
+    "possui_rateio": "boolean",
+    "criterios_apuracao_custo": ["string (ex: Centro de Custo, Empresa, Lotação Tributária)"],
+    "lancamento_rateio": {
+      "metodo_lancamento": "string (Definir valores por alocação, Definir eventos para ratear, etc.)",
+      "regra_especifica_metodo": "string"
+    },
+    "calculo_automatico_rateio": {
+      "habilitado": "boolean",
+      "regra_calculo_automatico": "string (ex: realizado automaticamente após o Cálculo da Folha)"
+    },
+    "outras_regras_rateio": "string"
+  }
+}
