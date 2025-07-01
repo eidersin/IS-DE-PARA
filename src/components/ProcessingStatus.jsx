@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2, CheckCircle, AlertCircle, Terminal } from 'lucide-react'
-import { useDocumentAnalysis } from '../context/DocumentAnalysisContext'
+import { useDocumentAnalysis } from '../hooks/useDocumentAnalysis'
 
 function ProcessingStatus() {
   const { state } = useDocumentAnalysis()
