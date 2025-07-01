@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useReducer } from 'react'
+import React, { createContext, useReducer } from 'react'
 
-const DocumentAnalysisContext = createContext()
+export const DocumentAnalysisContext = createContext()
 
 const initialState = {
   file: null,
@@ -26,7 +26,15 @@ const actionTypes = {
 function documentAnalysisReducer(state, action) {
   switch (action.type) {
     case actionTypes.SET_FILE:
-      return { ...state, file: action.payload, error: null }
+      return { 
+        ...state, 
+        file: action.payload, 
+        error: null,
+        results: null,
+        progress: 0,
+        currentStep: '',
+        logs: []
+      }
     
     case actionTypes.START_PROCESSING:
       return { 
@@ -35,11 +43,15 @@ function documentAnalysisReducer(state, action) {
         progress: 0, 
         currentStep: 'Iniciando análise...', 
         error: null,
+        results: null,
         logs: []
       }
     
     case actionTypes.UPDATE_PROGRESS:
-      return { ...state, progress: action.payload }
+      return { 
+        ...state, 
+        progress: Math.min(100, Math.max(0, action.payload))
+      }
     
     case actionTypes.SET_CURRENT_STEP:
       return { ...state, currentStep: action.payload }
@@ -50,7 +62,8 @@ function documentAnalysisReducer(state, action) {
         results: action.payload, 
         processing: false, 
         progress: 100,
-        currentStep: 'Análise concluída!'
+        currentStep: 'Análise concluída!',
+        error: null
       }
     
     case actionTypes.SET_ERROR:
@@ -58,16 +71,17 @@ function documentAnalysisReducer(state, action) {
         ...state, 
         error: action.payload, 
         processing: false,
-        currentStep: 'Erro na análise'
+        currentStep: 'Erro na análise',
+        results: null
       }
     
     case actionTypes.ADD_LOG:
       return { 
         ...state, 
         logs: [...state.logs, { 
-          id: Date.now(), 
+          id: Date.now() + Math.random(), 
           message: action.payload, 
-          timestamp: new Date().toLocaleTimeString() 
+          timestamp: new Date().toLocaleTimeString('pt-BR')
         }]
       }
     
@@ -98,12 +112,4 @@ export function DocumentAnalysisProvider({ children }) {
       {children}
     </DocumentAnalysisContext.Provider>
   )
-}
-
-export function useDocumentAnalysis() {
-  const context = useContext(DocumentAnalysisContext)
-  if (!context) {
-    throw new Error('useDocumentAnalysis must be used within a DocumentAnalysisProvider')
-  }
-  return context
 }

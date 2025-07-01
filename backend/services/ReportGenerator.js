@@ -1,14 +1,17 @@
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType } from 'docx'
 import fs from 'fs-extra'
 import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import { FileUtils } from '../utils/fileUtils.js'
+import { ERROR_MESSAGES } from '../config/constants.js'
 
 export class ReportGenerator {
   constructor() {
-    this.outputDir = path.join(__dirname, '..', 'output')
+    this.outputDir = path.join(FileUtils.getBackendRoot(), 'output')
+    this.initializeOutputDirectory()
+  }
+
+  async initializeOutputDirectory() {
+    await FileUtils.ensureDirectories([this.outputDir])
   }
 
   async generateFolhaReport(data) {
@@ -22,6 +25,11 @@ export class ReportGenerator {
             new Paragraph({
               text: "Diagnóstico de Folha de Pagamento - Análise da CCT",
               heading: HeadingLevel.TITLE,
+              spacing: { after: 400 }
+            }),
+            
+            new Paragraph({
+              text: `Relatório gerado em: ${new Date().toLocaleDateString('pt-BR')}`,
               spacing: { after: 400 }
             }),
             
@@ -39,7 +47,7 @@ export class ReportGenerator {
       return filePath
     } catch (error) {
       console.error('Erro ao gerar relatório de Folha:', error)
-      throw error
+      throw new Error(`${ERROR_MESSAGES.REPORT_GENERATION_FAILED}: ${error.message}`)
     }
   }
 
@@ -57,6 +65,11 @@ export class ReportGenerator {
               spacing: { after: 400 }
             }),
             
+            new Paragraph({
+              text: `Relatório gerado em: ${new Date().toLocaleDateString('pt-BR')}`,
+              spacing: { after: 400 }
+            }),
+            
             ...this.generateContabilContent(data)
           ]
         }]
@@ -71,7 +84,7 @@ export class ReportGenerator {
       return filePath
     } catch (error) {
       console.error('Erro ao gerar relatório Contábil:', error)
-      throw error
+      throw new Error(`${ERROR_MESSAGES.REPORT_GENERATION_FAILED}: ${error.message}`)
     }
   }
 
@@ -89,6 +102,7 @@ export class ReportGenerator {
       )
 
       const id = data.identificacao_documento
+      
       if (id.sindicato_empregados) {
         content.push(
           new Paragraph({
@@ -111,16 +125,17 @@ export class ReportGenerator {
         )
       }
 
-      if (id.vigencia) {
-        content.push(this.createInfoParagraph("Vigência", id.vigencia))
-      }
-      if (id.data_base_categoria) {
-        content.push(this.createInfoParagraph("Data Base", id.data_base_categoria))
-      }
+      // Add other identification fields
+      const otherFields = ['vigencia', 'data_base_categoria', 'abrangencia_territorial']
+      otherFields.forEach(field => {
+        if (id[field]) {
+          content.push(this.createInfoParagraph(field, id[field]))
+        }
+      })
     }
 
     // Pisos Salariais
-    if (data.pisos_salariais && data.pisos_salariais.length > 0) {
+    if (data.pisos_salariais && Array.isArray(data.pisos_salariais) && data.pisos_salariais.length > 0) {
       content.push(
         new Paragraph({
           text: "2. Pisos Salariais",
@@ -129,39 +144,20 @@ export class ReportGenerator {
         })
       )
 
-      const table = new Table({
-        width: { size: 100, type: WidthType.PERCENTAGE },
-        rows: [
-          new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph("Cargo/Função")] }),
-              new TableCell({ children: [new Paragraph("Piso (R$)")] }),
-              new TableCell({ children: [new Paragraph("Observações")] })
-            ]
-          }),
-          ...data.pisos_salariais.slice(0, 20).map(piso => 
-            new TableRow({
-              children: [
-                new TableCell({ children: [new Paragraph(String(piso.cargo_funcao || ''))] }),
-                new TableCell({ children: [new Paragraph(String(piso.valor_piso || ''))] }),
-                new TableCell({ children: [new Paragraph(String(piso.observacoes || ''))] })
-              ]
-            })
-          )
-        ]
-      })
-
+      const table = this.createPisosSalariaisTable(data.pisos_salariais)
       content.push(table)
     }
 
-    // Add other sections...
-    this.addGenericSections(content, data, [
+    // Add other sections dynamically
+    const sections = [
       'reajuste_salarial',
       'beneficios',
       'adicionais_e_gratificacoes',
       'jornada_de_trabalho',
       'estabilidade_provisoria'
-    ])
+    ]
+
+    this.addGenericSections(content, data, sections, 3)
 
     return content
   }
@@ -181,23 +177,69 @@ export class ReportGenerator {
       )
     }
 
-    // Add other sections...
-    this.addGenericSections(content, data, [
+    // Add other sections
+    const sections = [
       'especificacoes_layout_arquivo',
       'conceitos_gerais_contabilizacao',
       'configuracao_conta_contabil',
       'configuracao_rateio_contabil'
-    ])
+    ]
+
+    this.addGenericSections(content, data, sections, 2)
 
     return content
   }
 
-  addGenericSections(content, data, sections) {
+  createPisosSalariaisTable(pisos) {
+    const rows = [
+      new TableRow({
+        children: [
+          new TableCell({ 
+            children: [new Paragraph({ text: "Cargo/Função", bold: true })] 
+          }),
+          new TableCell({ 
+            children: [new Paragraph({ text: "Piso (R$)", bold: true })] 
+          }),
+          new TableCell({ 
+            children: [new Paragraph({ text: "Observações", bold: true })] 
+          })
+        ]
+      })
+    ]
+
+    // Limit to first 20 entries to avoid document bloat
+    const limitedPisos = pisos.slice(0, 20)
+    
+    limitedPisos.forEach(piso => {
+      rows.push(
+        new TableRow({
+          children: [
+            new TableCell({ 
+              children: [new Paragraph(String(piso.cargo_funcao || 'Não informado'))] 
+            }),
+            new TableCell({ 
+              children: [new Paragraph(String(piso.valor_piso || 'Não informado'))] 
+            }),
+            new TableCell({ 
+              children: [new Paragraph(String(piso.observacoes || 'Não informado'))] 
+            })
+          ]
+        })
+      )
+    })
+
+    return new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows
+    })
+  }
+
+  addGenericSections(content, data, sections, startIndex = 1) {
     sections.forEach((section, index) => {
-      if (data[section]) {
+      if (data[section] && this.hasValidContent(data[section])) {
         content.push(
           new Paragraph({
-            text: `${index + 2}. ${this.formatSectionTitle(section)}`,
+            text: `${startIndex + index}. ${this.formatSectionTitle(section)}`,
             heading: HeadingLevel.HEADING_1,
             spacing: { before: 400, after: 200 }
           }),
@@ -207,19 +249,35 @@ export class ReportGenerator {
     })
   }
 
-  createInfoParagraphs(obj) {
+  hasValidContent(obj) {
+    if (!obj || typeof obj !== 'object') {
+      return Boolean(obj)
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.length > 0
+    }
+
+    return Object.values(obj).some(value => this.hasValidContent(value))
+  }
+
+  createInfoParagraphs(obj, level = 0) {
     const paragraphs = []
     
+    if (!obj || typeof obj !== 'object') {
+      return paragraphs
+    }
+
     Object.entries(obj).forEach(([key, value]) => {
-      if (value !== null && value !== '' && value !== undefined) {
+      if (this.hasValidContent(value)) {
         if (typeof value === 'object' && !Array.isArray(value)) {
           paragraphs.push(
             new Paragraph({
               text: this.formatKey(key),
-              heading: HeadingLevel.HEADING_2,
+              heading: level === 0 ? HeadingLevel.HEADING_2 : HeadingLevel.HEADING_3,
               spacing: { before: 200, after: 100 }
             }),
-            ...this.createInfoParagraphs(value)
+            ...this.createInfoParagraphs(value, level + 1)
           )
         } else {
           paragraphs.push(this.createInfoParagraph(key, value))
@@ -231,7 +289,15 @@ export class ReportGenerator {
   }
 
   createInfoParagraph(key, value) {
-    const displayValue = Array.isArray(value) ? value.join(', ') : String(value)
+    let displayValue = 'Não informado'
+    
+    if (value !== null && value !== undefined && value !== '') {
+      if (Array.isArray(value)) {
+        displayValue = value.length > 0 ? value.join(', ') : 'Não informado'
+      } else {
+        displayValue = String(value)
+      }
+    }
     
     return new Paragraph({
       children: [
