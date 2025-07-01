@@ -1,4 +1,0 @@
-requests
-PyMuPDF
-python-docx
-python-dotenv
