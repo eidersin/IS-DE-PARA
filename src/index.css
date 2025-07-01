@@ -15,7 +15,7 @@
 
 @layer components {
   .glass-effect {
-    @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl;
+    @apply bg-white/80 backdrop-blur-sm border-[1px] border-white/20 shadow-xl;
   }
   
   .btn-primary {
