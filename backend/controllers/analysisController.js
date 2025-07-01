@@ -1,3 +1,5 @@
+import path from 'path'
+import fs from 'fs-extra'
 import { DocumentProcessor } from '../services/DocumentProcessor.js'
 import { AIAnalyzer } from '../services/AIAnalyzer.js'
 import { ReportGenerator } from '../services/ReportGenerator.js'
